@@ -146,7 +146,7 @@ def trainIters(encoder, decoder, n_iters, recurrent_unit, attention, train_batch
                     else:
                         count_since_improved += 1
 
-                    if count_since_improved >= 3 and iter >= 30000:
+                    if count_since_improved >= 10 and iter >= 30000: # Changed from 3: dev accuracy is noisy and attention-free models learn slower
                         break
 
 
