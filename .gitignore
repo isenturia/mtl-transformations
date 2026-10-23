@@ -17,3 +17,6 @@ models/
 
 # Python's automatic cache of compiled code
 __pycache__/
+
+# Slurm job logs
+*.out
