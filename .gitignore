@@ -1,3 +1,19 @@
 # Ignore because files are too big
 
 /generation/*.raw 
+
+# macOS Finder metadata
+.DS_Store
+
+# Datasets from OSF (too big for GitHub)
+data/*.train
+data/*.dev
+data/*.test
+data/*.gen
+
+# Trained models and outputs
+models/
+*.csv
+
+# Python's automatic cache of compiled code
+__pycache__/

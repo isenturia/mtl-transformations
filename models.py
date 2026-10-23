@@ -207,7 +207,7 @@ class DecoderRNN(nn.Module):
             output = F.relu(output)
             output, hidden = self.rnn(output, hidden)
 
-        output = F.log_softmax(self.out(output[0]))
+        output = F.log_softmax(self.out(output[0]), dim = 1)
         return output, hidden, attn_weights
 
     def forward(self, hidden, encoder_outputs, training_set, tf_ratio=0.5):
