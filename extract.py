@@ -18,6 +18,9 @@ prefix = sys.argv[2]
 hidden_size = 256
 MAX_LENGTH = 30
 
+# Models trained with "taskdec" give the task word to the decoder, not the encoder
+task_to_decoder = "taskdec" in model_dir
+
 # Vocabulary: word <-> index
 word2index = {}
 index2word = {}
@@ -28,8 +31,8 @@ for line in open("index.txt", "r"):
 
 # Rebuild the model the same way seq2seq.py does, then load the trained weights.
 # Run this on a CPU node: models.py moves tensors to the GPU whenever one exists.
-encoder = EncoderRNN(len(word2index), hidden_size, "GRU", max_length=MAX_LENGTH)
-decoder = DecoderRNN(hidden_size, len(word2index), "GRU", attn=0, n_layers=1, dropout_p=0.1, max_length=MAX_LENGTH)
+encoder = EncoderRNN(len(word2index), hidden_size, "GRU", max_length=MAX_LENGTH, task_to_decoder=task_to_decoder)
+decoder = DecoderRNN(hidden_size, len(word2index), "GRU", attn=0, n_layers=1, dropout_p=0.1, max_length=MAX_LENGTH, task_to_decoder=task_to_decoder)
 encoder.load_state_dict(torch.load(model_dir + "/" + prefix + ".encoder.0.0.0", map_location="cpu"))
 decoder.load_state_dict(torch.load(model_dir + "/" + prefix + ".decoder.0.0.0", map_location="cpu"))
 

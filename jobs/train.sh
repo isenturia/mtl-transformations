@@ -13,6 +13,8 @@
 #   sbatch jobs/train.sh passive_question_first
 #   sbatch jobs/train.sh passive_question_main
 # Running the same command again trains another model (_1, _2, ...) with a new seed.
+# Add "taskdec" to give the task word to the decoder instead of the encoder:
+#   sbatch jobs/train.sh passive taskdec
 
 DATASET=$1
 
@@ -26,6 +28,6 @@ echo "Dataset: $DATASET"
 echo "Node: $(hostname)"
 python -c "import torch; print('torch', torch.__version__, '| GPU available:', torch.cuda.is_available())"
 
-python -u seq2seq.py $DATASET $DATASET GRU 0 0.001 256
+python -u seq2seq.py $DATASET $DATASET GRU 0 0.001 256 $2
 
 ls -ltr models/${DATASET}_GRU_0_0.001_256_*/

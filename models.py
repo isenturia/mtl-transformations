@@ -28,9 +28,10 @@ else:
 
 # Class for the encoder RNN
 class EncoderRNN(nn.Module):
-    def __init__(self, input_size, hidden_size, recurrent_unit, n_layers=1, max_length=30):
+    def __init__(self, input_size, hidden_size, recurrent_unit, n_layers=1, max_length=30, task_to_decoder=False):
         super(EncoderRNN, self).__init__()
         self.n_layers = n_layers
+        self.task_to_decoder = task_to_decoder
         self.hidden_size = hidden_size
 
         self.embedding = nn.Embedding(input_size, hidden_size)
@@ -90,6 +91,12 @@ class EncoderRNN(nn.Module):
         input_length = input_variable.size()[0]
         target_length = target_variable.size()[0]
 
+        # The last input word is the task word (ACTIVE/PASSIVE); skip it, so the
+        # encoding is the sentence only. The decoder gets the task word instead.
+        if self.task_to_decoder:
+            input_length -= 1
+
+
         outputs = Variable(torch.zeros(self.max_length, batch_size, self.hidden_size))
         outputs = outputs.to(device=available_device)
 
@@ -104,9 +111,10 @@ class EncoderRNN(nn.Module):
 
 # Class for the basic decoder RNN, without attention
 class DecoderRNN(nn.Module):
-    def __init__(self, hidden_size, output_size, recurrent_unit, attn=False, n_layers=1, dropout_p=0.1, max_length=30):
+    def __init__(self, hidden_size, output_size, recurrent_unit, attn=False, n_layers=1, dropout_p=0.1, max_length=30, task_to_decoder=False):
         super(DecoderRNN, self).__init__()
         self.hidden_size = hidden_size
+        self.task_to_decoder = task_to_decoder
         self.output_size = output_size
         self.n_layers = n_layers
         self.dropout_p = dropout_p
@@ -218,6 +226,10 @@ class DecoderRNN(nn.Module):
 
         decoder_input = Variable(torch.LongTensor([0] * batch_size))
         decoder_input = decoder_input.to(device=available_device)
+
+        # Start from the task word (the last input word) instead of token 0
+        if self.task_to_decoder:
+            decoder_input = input_variable[-1]
 
         decoder_hidden = hidden
         

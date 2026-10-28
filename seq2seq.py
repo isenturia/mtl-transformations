@@ -46,6 +46,12 @@ EOS_tokenB = 2 # For PASSIVE
 
 prefix = sys.argv[1] 
 directory = "models/" + sys.argv[2] + "_" + sys.argv[3] + "_" + sys.argv[4] + "_" + sys.argv[5] + "_" + sys.argv[6]
+
+# Optional 7th argument "taskdec": give the task word to the decoder, not the encoder
+task_to_decoder = len(sys.argv) > 7 and sys.argv[7] == "taskdec"
+if task_to_decoder:
+    directory = directory + "_taskdec"
+
 datadir = "data/"
 
 if __name__ == "__main__":
@@ -260,8 +266,8 @@ if __name__ == "__main__":
         encoder1 = EncoderRNN(len(word2index.keys()), hidden_size, "ONLSTM", max_length=MAX_LENGTH)
         decoder1 = DecoderRNN(hidden_size, len(word2index.keys()), "ONLSTM", attn=attention, n_layers=1, dropout_p=0.1, max_length=MAX_LENGTH)
     else:
-        encoder1 = EncoderRNN(len(word2index.keys()), hidden_size, recurrent_unit, max_length=MAX_LENGTH)
-        decoder1 = DecoderRNN(hidden_size, len(word2index.keys()), recurrent_unit, attn=attention, n_layers=1, dropout_p=0.1, max_length=MAX_LENGTH)
+        encoder1 = EncoderRNN(len(word2index.keys()), hidden_size, recurrent_unit, max_length=MAX_LENGTH, task_to_decoder=task_to_decoder)
+        decoder1 = DecoderRNN(hidden_size, len(word2index.keys()), recurrent_unit, attn=attention, n_layers=1, dropout_p=0.1, max_length=MAX_LENGTH, task_to_decoder=task_to_decoder)
 
     encoder1 = encoder1.to(device=available_device)
     decoder1 = decoder1.to(device=available_device)
